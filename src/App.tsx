@@ -80,6 +80,7 @@ export default function App() {
         if (created.error) { setNotice("Workspace setup failed: " + created.error.message); return; }
         id = created.data.id;
       }
+      if (!id) { setNotice("Could not create a research workspace."); return; }
       setWorkspaceId(id);
       const [reportResult, savedResult] = await Promise.all([
         supabase.from("research_reports").select("*").eq("owner_id", user.id).order("updated_at", { ascending: false }),
@@ -139,7 +140,7 @@ export default function App() {
     else if (authMode === "signup" && !result.data.session) setAuthMessage("Account created. Check your email to confirm the address, then sign in.");
     else setAuthMessage("Signed in. Loading your workspace…");
   };
-  const createReport = () => {
+  const createReport = async () => {
     const name = (reportTitle || product || "Market opportunity research").trim();
     const body = [
       "# " + name, "", "Market: " + market, "Research objective: " + objective, "",
